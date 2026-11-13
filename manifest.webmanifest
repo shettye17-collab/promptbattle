@@ -1,0 +1,11 @@
+
+{
+  "name": "Rural JARVIS Student Transit Assistant",
+  "short_name": "Rural JARVIS",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#06101d",
+  "theme_color": "#07111f",
+  "description": "Mobile-first rural student bus assistant",
+  "icons": []
+}

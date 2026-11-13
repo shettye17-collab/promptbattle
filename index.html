@@ -1,0 +1,238 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="Rural JARVIS - Smart rural student bus assistant">
+
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <title>Rural JARVIS</title>
+</head>
+<body>
+  <div class="app-shell">
+
+    <header class="topbar">
+      <div class="brand-mark">J</div>
+      <div>
+        <div class="brand">RURAL <span>JARVIS</span></div>
+        <div class="subbrand">STUDENT TRANSIT INTELLIGENCE</div>
+      </div>
+      <button id="locationBtn" class="icon-btn">⌖</button>
+    </header>
+
+    <main>
+
+      <!-- HOME -->
+      <section id="homeView" class="view active">
+        <div class="welcome-row">
+          <div>
+            <p class="eyebrow">YOUR TRAVEL COMPANION</p>
+            <h1>Good morning.</h1>
+            <p class="muted">Let's get you to class on time.</p>
+          </div>
+          <div class="live-pill">● DEMO LIVE</div>
+        </div>
+
+        <div class="assistant-card">
+          <div class="orb-wrap">
+            <div class="orb">
+              <div class="orb-core">J</div>
+            </div>
+          </div>
+          <div class="assistant-copy">
+            <p class="eyebrow">JARVIS ASSISTANT</p>
+            <h2>How can I help?</h2>
+            <p id="assistantStatus" class="muted">
+              Your rural commute, made smarter.
+            </p>
+          </div>
+          <button id="micBtn" class="mic-btn">🎙</button>
+        </div>
+
+        <div class="section-heading">
+          <h2>Next bus</h2>
+          <span class="demo-tag">SIMULATED DATA</span>
+        </div>
+
+        <article class="bus-card">
+          <div class="bus-top">
+            <div>
+              <span class="route-label" id="routeId">ROUTE RJ-04</span>>
+              <h3 id="nextBusName">Village – College</h3>
+            </div>
+            <span id="busStatus" class="status-pill moving">● MOVING</span>
+          </div>
+
+          <div class="bus-metrics">
+            <div><strong id="eta">08</strong><span>MINUTES</span></div>
+            <div><strong id="distance">2.4 km</strong><span>TO YOUR STOP</span></div>
+            <div><strong id="busTime">08:00</strong><span>EST. ARRIVAL</span></div>
+          </div>
+
+          <div class="progress-track">
+            <div id="busProgress" class="progress-fill"></div>
+          </div>
+
+          <p id="busNote" class="small muted">
+            Bus location is simulated for this prototype.
+          </p>
+
+          <button id="trackBusBtn" class="primary-btn">
+            Track this bus →
+          </button>
+        </article>
+
+        <div class="section-heading">
+          <h2>Smart leave alert</h2>
+          <span class="muted small">10 min buffer</span>
+        </div>
+
+        <article class="alert-card">
+          <div class="alert-icon">◷</div>
+          <div class="alert-text">
+            <strong id="leaveTime">Leave at 07:45 AM</strong>
+            <p id="leaveDetail" class="muted small">
+              Includes walking time and safety buffer.
+            </p>
+          </div>
+          <button id="reminderBtn" class="switch on">
+            <span></span>
+          </button>
+        </article>
+
+        <div class="section-heading"><h2>Quick actions</h2></div>
+
+        <div class="quick-grid">
+          <button class="quick-action" data-action="bus">⌖ Find my bus</button>
+          <button class="quick-action" data-action="alternate">⇄ Other buses</button>
+          <button class="quick-action" data-action="routes">↗ My routes</button>
+          <button class="quick-action" data-action="assistant">✧ Ask JARVIS</button>
+        </div>
+      </section>
+
+      <!-- MAP -->
+      <section id="mapView" class="view">
+        <div class="page-title">
+          <p class="eyebrow">BUS LOCATION</p>
+          <h1>Bus tracker</h1>
+          <p class="muted">Demo route and GPS positions.</p>
+        </div>
+
+        <div id="map"></div>
+
+        <div class="map-legend">
+          <span>🔵 You</span>
+          <span>🚌 Bus</span>
+          <span>🟢 Bus stop</span>
+        </div>
+
+        <article class="mini-card">
+          <strong id="mapBusTitle">RJ-04 · Village – College</strong>
+          <p id="mapBusInfo" class="muted small">
+            Simulated bus position.
+          </p>
+        </article>
+      </section>
+
+      <!-- ROUTES -->
+      <section id="routesView" class="view">
+        <div class="page-title">
+          <p class="eyebrow">YOUR JOURNEY</p>
+          <h1>My routes</h1>
+        </div>
+
+        <div id="routeList" class="stack"></div>
+
+        <div class="section-heading"><h2>Travel preferences</h2></div>
+
+        <article class="settings-card">
+          <label>
+            Walking time:
+            <strong><span id="walkValue">5</span> min</strong>
+          </label>
+          <input id="walkRange" type="range" min="0" max="30" value="5">
+
+          <label>
+            Safety buffer:
+            <strong><span id="bufferValue">10</span> min</strong>
+          </label>
+          <input id="bufferRange" type="range" min="2" max="20" value="10">
+
+          <label>
+            Extra alert lead:
+            <strong><span id="leadValue">0</span> min</strong>
+          </label>
+          <input id="leadRange" type="range" min="0" max="30" value="0">
+        </article>
+      </section>
+
+      <!-- NOTIFICATIONS -->
+      <section id="notificationsView" class="view">
+        <div class="page-title">
+          <p class="eyebrow">TRAVEL UPDATES</p>
+          <h1>Notifications</h1>
+        </div>
+
+        <div id="notificationList" class="stack"></div>
+        <button id="enableNotifications" class="primary-btn">
+          Enable browser notifications
+        </button>
+      </section>
+
+      <!-- ASSISTANT -->
+      <section id="assistantView" class="view">
+        <div class="page-title">
+          <p class="eyebrow">AI TRAVEL ASSISTANT</p>
+          <h1>Ask JARVIS</h1>
+        </div>
+
+        <div class="chat-panel">
+          <div id="chatMessages" class="chat-messages">
+            <div class="bubble jarvis">
+              Hello! I'm JARVIS. Ask me where your bus is.
+              <small>JARVIS · DEMO</small>
+            </div>
+          </div>
+
+          <div class="suggestions">
+            <button data-question="Where is my bus?">Where is my bus?</button>
+            <button data-question="Has my bus started?">Has it started?</button>
+            <button data-question="Find another bus">Find another bus</button>
+          </div>
+
+          <form id="chatForm" class="chat-form">
+            <input id="chatInput" placeholder="Ask JARVIS anything...">
+            <button>➤</button>
+          </form>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+      <button class="nav-item selected" data-view="homeView">⌂<small>Home</small></button>
+      <button class="nav-item" data-view="mapView">⌖<small>Map</small></button>
+      <button class="nav-item" data-view="routesView">↗<small>Routes</small></button>
+      <button class="nav-item" data-view="notificationsView">♧<small>Alerts</small></button>
+      <button class="nav-item" data-view="assistantView">✧<small>JARVIS</small></button>
+    </nav>
+
+    <div id="toast" class="toast"></div>
+
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="./app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+
+<script src="app.js"></script>
+</body>
+</html>
